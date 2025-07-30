@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recetas de Bebidas - Para Mamá</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%);
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #8B4513, #A0522D);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .admin-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            min-height: 44px;
+            min-width: 120px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .admin-toggle:hover, .admin-toggle:active {
+            background: white;
+            color: #8B4513;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .search-section {
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1001;
+        }
+        
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            z-index: 1001;
+            padding-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 20px 25px;
+            font-size: 18px;
+            border: 3px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            -webkit-appearance: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        .search-input:focus {
+            border-color: #8B4513;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1002;
+            margin-top: 10px;
+            border: 2px solid #ddd;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .suggestion-item {
+            padding: 20px 25px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+            background: white;
+            font-size: 18px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-item:hover, .suggestion-item:active {
+            background: #f8f9fa;
+            color: #8B4513;
+        }
+        
+        .recipe-display {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .recipe-title {
+            color: #8B4513;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .recipe-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .ingredients, .instructions {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .ingredients h3, .instructions h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .ingredients ul {
+            list-style: none;
+        }
+        
+        .ingredients li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .ingredients li:before {
+            content: "☕ ";
+            margin-right: 10px;
+        }
+        
+        .video-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .video-link {
+            display: inline-block;
+            background: #8B4513;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .video-link:hover, .video-link:active {
+            background: #A0522D;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .video-link small {
+            display: block;
+            font-size: 14px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        
+        .admin-panel {
+            display: none;
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+        }
+        
+        .admin-panel.active {
+            display: block;
+        }
+        
+        .admin-form {
+            background: #34495e;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            min-height: 44px;
+            -webkit-appearance: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .btn {
+            background: #8B4513;
+            color: white;
+            padding: 18px 35px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            min-width: 120px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover, .btn:active {
+            background: #A0522D;
+            transform: translateY(-2px);
+        }
+        
+        .btn-cancel {
+            background: #6c757d;
+        }
+        
+        .btn-cancel:hover, .btn-cancel:active {
+            background: #545b62;
+        }
+        
+        .recipe-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .recipe-card {
+            background: #34495e;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .recipe-card h4 {
+            margin-bottom: 10px;
+            color: #D2B48C;
+            padding-right: 80px;
+        }
+        
+        .recipe-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .edit-btn, .delete-btn {
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+        
+        .edit-btn:hover, .edit-btn:active {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .delete-btn:hover, .delete-btn:active {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+        
+        .back-btn {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+            min-width: 140px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .back-btn:hover, .back-btn:active {
+            background: #A0522D;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .editing-mode {
+            border: 3px solid #3498db;
+            background: #ecf0f1 !important;
+        }
+        
+        .editing-mode h3 {
+            color: #3498db !important;
+        }
+        
+        @media (max-width: 768px) {
+            .recipe-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .admin-toggle {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 0 auto 20px auto;
+                display: block;
+                width: 200px;
+            }
+            
+            .header {
+                padding-bottom: 20px;
+            }
+            
+            .search-input {
+                font-size: 20px;
+                padding: 22px 25px;
+            }
+            
+            .suggestion-item {
+                padding: 22px 25px;
+                font-size: 20px;
+            }
+            
+            .recipe-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .recipe-card h4 {
+                padding-right: 90px;
+            }
+        }
+        
+        /* Mejoras para iOS */
+        input, textarea, button {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        input[type="text"], input[type="url"], textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        /* Animaciones más suaves en iOS */
+        * {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="admin-toggle" onclick="toggleAdmin()">📝 Agregar Receta</button>
+            <h1>☕ Coffee King</h1>
+            <p>Recetario</p>
+        </div>
+        
+        <!-- Panel de Usuario Normal -->
+        <div class="main-content" id="userPanel">
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="searchInput" 
+                           placeholder="¿Qué bebida quieres preparar hoy?" 
+                           oninput="showSuggestions()" onclick="showSuggestions()">
+                    <div class="suggestions hidden" id="suggestions"></div>
+                </div>
+            </div>
+            
+            <div class="recipe-display hidden" id="recipeDisplay">
+                <button class="back-btn" onclick="goBackToHome()">← Volver al inicio</button>
+                <h2 class="recipe-title" id="recipeTitle"></h2>
+                <div class="recipe-content">
+                    <div class="ingredients">
+                        <h3>🥄 Ingredientes</h3>
+                        <ul id="ingredientsList"></ul>
+                    </div>
+                    <div class="instructions">
+                        <h3>📝 Preparación</h3>
+                        <div id="instructionsText"></div>
+                    </div>
+                </div>
+                <div class="video-container" id="videoContainer"></div>
+            </div>
+        </div>
+        
+        <!-- Panel de Administrador -->
+        <div class="admin-panel" id="adminPanel">
+            <h2 id="adminTitle">📝 Agregar Nueva Receta</h2>
+            <p>Aquí puedes agregar y gestionar las recetas de bebidas</p>
+            
+            <div class="admin-form" id="adminForm">
+                <h3 id="formTitle">☕ Nueva Bebida</h3>
+                <div class="form-group">
+                    <label>Nombre de la Bebida:</label>
+                    <input type="text" id="recipeName" placeholder="Ej: Limonada Casera">
+                </div>
+                
+                <div class="form-group">
+                    <label>Ingredientes (uno por línea):</label>
+                    <textarea id="recipeIngredients" placeholder="2 limones grandes&#10;1 litro de agua&#10;3 cucharadas de azúcar&#10;Hielo al gusto"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Instrucciones de Preparación:</label>
+                    <textarea id="recipeInstructions" placeholder="1. Exprime los limones...&#10;2. Mezcla con agua...&#10;3. Agrega azúcar al gusto..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Link del Video (TikTok, YouTube, etc.) - Opcional:</label>
+                    <input type="url" id="recipeVideo" placeholder="https://www.tiktok.com/@usuario/video/...">
+                </div>
+                
+                <button class="btn" id="saveBtn" onclick="saveRecipe()">💾 Guardar Receta</button>
+                <button class="btn btn-cancel hidden" id="cancelBtn" onclick="cancelEdit()">❌ Cancelar</button>
+            </div>
+            
+            <div>
+                <h3>📚 Mis Recetas Guardadas</h3>
+                <div class="recipe-list" id="recipeList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de recetas con guardado automático
+        let recipes = loadRecipes() || {
+            'limonada': {
+                name: 'Limonada Casera',
+                ingredients: ['2 limones grandes', '1 litro de agua fría', '3 cucharadas de azúcar', 'Hielo al gusto', 'Hojas de menta (opcional)'],
+                instructions: '1. Exprime los limones y cuela el jugo para quitar las semillas.\n2. En una jarra, mezcla el jugo de limón con el agua fría.\n3. Agrega el azúcar y revuelve hasta que se disuelva completamente.\n4. Prueba y ajusta el dulzor si es necesario.\n5. Sirve con hielo y decora con hojas de menta.',
+                video: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+            },
+            'agua de jamaica': {
+                name: 'Agua de Jamaica',
+                ingredients: ['1 taza de flores de jamaica', '2 litros de agua', 'Azúcar al gusto', 'Hielo', 'Limón (opcional)'],
+                instructions: '1. Hierve 1 litro de agua.\n2. Agrega las flores de jamaica y deja reposar 10 minutos.\n3. Cuela y agrega el resto del agua fría.\n4. Endulza al gusto.\n5. Sirve con hielo y una rodaja de limón.',
+                video: ''
+            },
+            'horchata': {
+                name: 'Horchata de Arroz',
+                ingredients: ['1 taza de arroz', '1 rama de canela', '1 taza de leche', '1/2 taza de azúcar', '1 cucharadita de vainilla', 'Canela en polvo'],
+                instructions: '1. Remoja el arroz con la canela en agua caliente por 3 horas.\n2. Licúa todo muy bien y cuela.\n3. Agrega la leche, azúcar y vainilla.\n4. Licúa nuevamente.\n5. Sirve bien fría con canela en polvo encima.',
+                video: ''
+            }
+        };
+        
+        let isAdminMode = false;
+        let editingRecipeKey = null; // Para saber qué receta estamos editando
+        
+        // Funciones para guardar y cargar recetas (mejoradas para iOS)
+        function saveRecipes() {
+            try {
+                const data = JSON.stringify(recipes);
+                // Intentar localStorage primero
+                localStorage.setItem('recetas_bebidas', data);
+                console.log('Recetas guardadas en localStorage');
+            } catch(e) {
+                console.log('localStorage no disponible, usando memoria');
+                // En iOS WebView a veces localStorage no funciona, pero las variables se mantienen en la sesión
+            }
+        }
+        
+        function loadRecipes() {
+            try {
+                const saved = localStorage.getItem('recetas_bebidas');
+                if (saved) {
+                    console.log('Recetas cargadas desde localStorage');
+                    return JSON.parse(saved);
+                }
+            } catch(e) {
+                console.log('Error cargando desde localStorage');
+            }
+            return null;
+        }
+        
+        function toggleAdmin() {
+            isAdminMode = !isAdminMode;
+            const userPanel = document.getElementById('userPanel');
+            const adminPanel = document.getElementById('adminPanel');
+            const adminToggle = document.querySelector('.admin-toggle');
+            
+            if (isAdminMode) {
+                userPanel.style.display = 'none';
+                adminPanel.classList.add('active');
+                adminToggle.textContent = '🏠 Ver Recetas';
+                loadRecipeList();
+                // Cancelar cualquier edición en curso
+                cancelEdit();
+            } else {
+                userPanel.style.display = 'block';
+                adminPanel.classList.remove('active');
+                adminToggle.textContent = '📝 Agregar Receta';
+            }
+        }
+        
+        function showSuggestions() {
+            const input = document.getElementById('searchInput');
+            const suggestions = document.getElementById('suggestions');
+            const recipeDisplay = document.getElementById('recipeDisplay');
+            const searchTerm = input.value.toLowerCase();
+            
+            if (searchTerm.length === 0) {
+                suggestions.classList.add('hidden');
+                recipeDisplay.style.marginTop = '30px';
+                return;
+            }
+            
+            const matches = Object.keys(recipes).filter(key => 
+                key.includes(searchTerm) || recipes[key].name.toLowerCase().includes(searchTerm)
+            );
+            
+            if (matches.length > 0) {
+                suggestions.innerHTML = matches.map(key => 
+                    `<div class="suggestion-item" onclick="selectRecipe('${key}')">${recipes[key].name}</div>`
+                ).join('');
+                suggestions.classList.remove('hidden');
+                recipeDisplay.style.marginTop = '120px';
+            } else {
+                suggestions.innerHTML = '<div class="suggestion-item">No se encontraron recetas 😔</div>';
+                suggestions.classList.remove('hidden');
+                recipeDisplay.style.marginTop = '120px';
+            }
+        }
+        
+        function selectRecipe(recipeKey) {
+            const recipe = recipes[recipeKey];
+            const suggestions = document.getElementById('suggestions');
+            const searchInput = document.getElementById('searchInput');
+            const recipeDisplay = document.getElementById('recipeDisplay');
+            
+            // Ocultar sugerencias y restaurar margen normal
+            suggestions.classList.add('hidden');
+            recipeDisplay.style.marginTop = '30px';
+            searchInput.value = recipe.name;
+            
+            // Mostrar receta
+            document.getElementById('recipeTitle').textContent = recipe.name;
+            
+            // Mostrar ingredientes
+            const ingredientsList = document.getElementById('ingredientsList');
+            ingredientsList.innerHTML = recipe.ingredients.map(ingredient => 
+                `<li>${ingredient}</li>`
+            ).join('');
+            
+            // Mostrar instrucciones
+            const instructionsText = document.getElementById('instructionsText');
+            instructionsText.innerHTML = recipe.instructions.replace(/\n/g, '<br>');
+            
+            // Mostrar video si existe
+            const videoContainer = document.getElementById('videoContainer');
+            if (recipe.video && recipe.video.trim() !== '') {
+                videoContainer.innerHTML = `
+                    <h3>🎥 Ver Video Tutorial</h3>
+                    <a href="${recipe.video}" target="_blank" class="video-link">
+                        📱 Abrir Video
+                        <small>Se abrirá en nueva ventana/app</small>
+                    </a>
+                `;
+            } else {
+                videoContainer.innerHTML = '';
+            }
+            
+            recipeDisplay.classList.remove('hidden');
+        }
+        
+        // Nueva función para editar recetas
+        function editRecipe(recipeKey) {
+            const recipe = recipes[recipeKey];
+            if (!recipe) return;
+            
+            editingRecipeKey = recipeKey;
+            
+            // Cambiar títulos y botones
+            document.getElementById('adminTitle').textContent = '✏️ Editar Receta';
+            document.getElementById('formTitle').textContent = '✏️ Editando: ' + recipe.name;
+            document.getElementById('saveBtn').textContent = '💾 Actualizar Receta';
+            document.getElementById('cancelBtn').classList.remove('hidden');
+            
+            // Llenar el formulario con los datos existentes
+            document.getElementById('recipeName').value = recipe.name;
+            document.getElementById('recipeIngredients').value = recipe.ingredients.join('\n');
+            document.getElementById('recipeInstructions').value = recipe.instructions;
+            document.getElementById('recipeVideo').value = recipe.video || '';
+            
+            // Agregar clase visual para indicar modo de edición
+            document.getElementById('adminForm').classList.add('editing-mode');
+            
+            // Scroll al formulario
+            document.getElementById('adminForm').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function cancelEdit() {
+            editingRecipeKey = null;
+            
+            // Restaurar títulos y botones
+            document.getElementById('adminTitle').textContent = '📝 Agregar Nueva Receta';
+            document.getElementById('formTitle').textContent = '☕ Nueva Bebida';
+            document.getElementById('saveBtn').textContent = '💾 Guardar Receta';
+            document.getElementById('cancelBtn').classList.add('hidden');
+            
+            // Limpiar formulario
+            clearForm();
+            
+            // Quitar clase visual de edición
+            document.getElementById('adminForm').classList.remove('editing-mode');
+        }
+        
+        function clearForm() {
+            document.getElementById('recipeName').value = '';
+            document.getElementById('recipeIngredients').value = '';
+            document.getElementById('recipeInstructions').value = '';
+            document.getElementById('recipeVideo').value = '';
+        }
+        
+        function saveRecipe() {
+            const name = document.getElementById('recipeName').value.trim();
+            const ingredients = document.getElementById('recipeIngredients').value.trim();
+            const instructions = document.getElementById('recipeInstructions').value.trim();
+            const video = document.getElementById('recipeVideo').value.trim();
+            
+            if (!name || !ingredients || !instructions) {
+                alert('Por favor llena todos los campos obligatorios');
+                return;
+            }
+            
+            const recipeKey = name.toLowerCase();
+            const ingredientsArray = ingredients.split('\n').filter(ingredient => ingredient.trim() !== '');
+            
+            // Si estamos editando y el nombre cambió, eliminar la receta anterior
+            if (editingRecipeKey && editingRecipeKey !== recipeKey) {
+                delete recipes[editingRecipeKey];
+            }
+            
+            recipes[recipeKey] = {
+                name: name,
+                ingredients: ingredientsArray,
+                instructions: instructions,
+                video: video
+            };
+            
+            // Guardar automáticamente
+            saveRecipes();
+            
+            // Mensaje de confirmación
+            const message = editingRecipeKey ? '¡Receta actualizada exitosamente! ✨' : '¡Receta agregada exitosamente! 🎉';
+            alert(message);
+            
+            // Limpiar y resetear
+            cancelEdit();
+            loadRecipeList();
+        }
+        
+        function loadRecipeList() {
+            const recipeList = document.getElementById('recipeList');
+            if (Object.keys(recipes).length === 0) {
+                recipeList.innerHTML = '<p style="text-align: center; color: #bbb; font-style: italic;">No hay recetas guardadas aún</p>';
+                return;
+            }
+            
+            recipeList.innerHTML = Object.keys(recipes).map(key => {
+                const recipe = recipes[key];
+                return `
+                    <div class="recipe-card">
+                        <div class="recipe-actions">
+                            <button class="edit-btn" onclick="editRecipe('${key}')" title="Editar receta">✏️</button>
+                            <button class="delete-btn" onclick="deleteRecipe('${key}')" title="Eliminar receta">🗑️</button>
+                        </div>
+                        <h4>${recipe.name}</h4>
+                        <p><strong>Ingredientes:</strong> ${recipe.ingredients.length} items</p>
+                        <p><strong>Video:</strong> ${recipe.video ? 'Sí' : 'No'}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function goBackToHome() {
+            const recipeDisplay = document.getElementById('recipeDisplay');
+            const searchInput = document.getElementById('searchInput');
+            const suggestions = document.getElementById('suggestions');
+            
+            // Ocultar la receta
+            recipeDisplay.classList.add('hidden');
+            
+            // Limpiar el campo de búsqueda
+            searchInput.value = '';
+            
+            // Ocultar sugerencias si están visibles
+            suggestions.classList.add('hidden');
+            
+            // Restaurar margen normal
+            recipeDisplay.style.marginTop = '30px';
+            
+            // Hacer scroll suave al inicio
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Función mejorada para eliminar recetas
+        function deleteRecipe(recipeKey) {
+            const recipe = recipes[recipeKey];
+            if (!recipe) {
+                alert('Error: No se encontró la receta');
+                return;
+            }
+            
+            // Confirmación más clara
+            const confirmMessage = `¿Estás seguro de que quieres eliminar la receta "${recipe.name}"?\n\nEsta acción no se puede deshacer.`;
+            
+            if (confirm(confirmMessage)) {
+                try {
+                    // Si estamos editando esta receta, cancelar la edición
+                    if (editingRecipeKey === recipeKey) {
+                        cancelEdit();
+                    }
+                    
+                    // Eliminar la receta
+                    delete recipes[recipeKey];
+                    
+                    // Guardar cambios
+                    saveRecipes();
+                    
+                    // Recargar la lista
+                    loadRecipeList();
+                    
+                    // Mensaje de confirmación
+                    alert(`✅ Receta "${recipe.name}" eliminada exitosamente`);
+                    
+                } catch (error) {
+                    console.error('Error al eliminar receta:', error);
+                    alert('❌ Error al eliminar la receta. Inténtalo de nuevo.');
+                }
+            }
+        }
+        
+        // Ocultar sugerencias cuando se hace clic fuera
+        document.addEventListener('click', function(e) {
+            const searchContainer = document.querySelector('.search-container');
+            const recipeDisplay = document.getElementById('recipeDisplay');
+            
+            if (!searchContainer.contains(e.target)) {
+                const suggestions = document.getElementById('suggestions');
+                if (suggestions) {
+                    suggestions.classList.add('hidden');
+                    if (recipeDisplay) {
+                        recipeDisplay.style.marginTop = '30px';
+                    }
+                }
+            }
+        });
+        
+        // Prevenir zoom en iOS cuando se hace doble tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // Mejorar el manejo de teclado en iOS
+        document.addEventListener('DOMContentLoaded', function() {
+            // Prevenir que el viewport se mueva cuando aparece el teclado
+            const viewport = document.querySelector('meta[name=viewport]');
+            if (viewport) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            }
+            
+            // Cargar lista de recetas si está en modo admin
+            if (isAdminMode) {
+                loadRecipeList();
+            }
+            
+            // Detectar si está en una app de iOS
+            const isIOSApp = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOSApp) {
+                document.body.classList.add('ios-app');
+                console.log('Ejecutándose en iOS');
+            }
+        });
+        
+        // Función para hacer scroll suave en iOS
+        function smoothScrollTo(element) {
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+        
+        // Mejorar la experiencia táctil
+        function addTouchFeedback(element) {
+            element.addEventListener('touchstart', function() {
+                this.style.opacity = '0.7';
+            }, { passive: true });
+            
+            element.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.opacity = '1';
+                }, 150);
+            }, { passive: true });
+        }
+        
+        // Aplicar feedback táctil a todos los botones
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('button, .video-link');
+            buttons.forEach(addTouchFeedback);
+        });
+        
+        // Función de utilidad para debug en iOS
+        function debugLog(message) {
+            console.log(`[Recetario] ${new Date().toLocaleTimeString()}: ${message}`);
+        }
+        
+        // Inicialización
+        debugLog('Aplicación iniciada');
+        
+        // Auto-guardar cada 30 segundos (por si acaso)
+        setInterval(function() {
+            if (Object.keys(recipes).length > 0) {
+                saveRecipes();
+                debugLog('Auto-guardado realizado');
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
